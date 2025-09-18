@@ -36,8 +36,13 @@ http://localhost:3000/swagger/
 - `GET /swagger/*` - Swagger API documentation
 
 ### Authentication
-- `POST /auth/register` - Register a new user
+- `POST /auth/register` - Register a new user with profile information
 - `POST /auth/login` - Login and get JWT token
+
+### Profile Management
+- `GET /profile` - Get current user's profile (requires JWT token)
+- `PUT /profile` - Update current user's profile (requires JWT token)
+- `GET /profile/membership` - Get membership information (requires JWT token)
 
 ### Protected Routes
 - `GET /protected` - Example protected route (requires JWT token)
@@ -48,7 +53,7 @@ http://localhost:3000/swagger/
 ```bash
 curl -X POST http://localhost:3000/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"123456"}'
+  -d '{"email":"user@example.com","password":"123456","first_name":"John","last_name":"Doe","phone":"081-234-5678"}'
 ```
 
 ### Login:
@@ -56,6 +61,26 @@ curl -X POST http://localhost:3000/auth/register \
 curl -X POST http://localhost:3000/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"user@example.com","password":"123456"}'
+```
+
+### Get user profile:
+```bash
+curl -X GET http://localhost:3000/profile \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE"
+```
+
+### Update user profile:
+```bash
+curl -X PUT http://localhost:3000/profile \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE" \
+  -H "Content-Type: application/json" \
+  -d '{"first_name":"Jane","last_name":"Smith","phone":"081-999-8888"}'
+```
+
+### Get membership information:
+```bash
+curl -X GET http://localhost:3000/profile/membership \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE"
 ```
 
 ### Access protected route:

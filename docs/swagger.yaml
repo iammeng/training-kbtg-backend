@@ -17,16 +17,38 @@ definitions:
     - email
     - password
     type: object
+  models.ProfileResponse:
+    properties:
+      user:
+        $ref: '#/definitions/models.User'
+    type: object
   models.RegisterRequest:
     properties:
       email:
         type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
       password:
         minLength: 6
         type: string
+      phone:
+        type: string
     required:
     - email
+    - first_name
+    - last_name
     - password
+    type: object
+  models.UpdateProfileRequest:
+    properties:
+      first_name:
+        type: string
+      last_name:
+        type: string
+      phone:
+        type: string
     type: object
   models.User:
     properties:
@@ -34,7 +56,19 @@ definitions:
         type: string
       email:
         type: string
+      first_name:
+        type: string
       id:
+        type: integer
+      last_name:
+        type: string
+      member_level:
+        type: string
+      membership_id:
+        type: string
+      phone:
+        type: string
+      points:
         type: integer
       updated_at:
         type: string
@@ -99,7 +133,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Register a new user with email and password
+      description: Register a new user with email, password, and profile information
       parameters:
       - description: User registration data
         in: body
@@ -129,6 +163,102 @@ paths:
       summary: Register a new user
       tags:
       - Authentication
+  /profile:
+    get:
+      description: Get current user's profile information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ProfileResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - Profile
+    put:
+      consumes:
+      - application/json
+      description: Update current user's profile information
+      parameters:
+      - description: Profile update data
+        in: body
+        name: profile
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update user profile
+      tags:
+      - Profile
+  /profile/membership:
+    get:
+      description: Get current user's membership details including points and level
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get membership information
+      tags:
+      - Profile
   /protected:
     get:
       description: Example of a protected route that requires authentication

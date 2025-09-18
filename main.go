@@ -85,6 +85,12 @@ func main() {
 	// Protected routes
 	app.Get("/protected", middleware.JWTMiddleware(), protectedRoute)
 
+	// Profile routes
+	profile := app.Group("/profile", middleware.JWTMiddleware())
+	profile.Get("/", handlers.GetProfile)
+	profile.Put("/", handlers.UpdateProfile)
+	profile.Get("/membership", handlers.GetMembershipInfo)
+
 	// Start server on port 3000
 	log.Printf("Server starting on port 3000...")
 	log.Printf("Swagger documentation available at http://localhost:3000/swagger/")

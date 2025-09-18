@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"fmt"
 	"temp-backend-at-kbtg/database"
 	"temp-backend-at-kbtg/middleware"
 	"temp-backend-at-kbtg/models"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
@@ -11,7 +13,7 @@ import (
 
 // Register godoc
 // @Summary Register a new user
-// @Description Register a new user with email and password
+// @Description Register a new user with email, password, and profile information
 // @Tags Authentication
 // @Accept json
 // @Produce json
@@ -30,9 +32,9 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	// Basic validation
-	if req.Email == "" || req.Password == "" {
+	if req.Email == "" || req.Password == "" || req.FirstName == "" || req.LastName == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Email and password are required",
+			"error": "Email, password, first name, and last name are required",
 		})
 	}
 
@@ -58,10 +60,19 @@ func Register(c *fiber.Ctx) error {
 		})
 	}
 
+	// Generate membership ID
+	membershipID := fmt.Sprintf("LBK%05d", time.Now().Unix()%100000)
+
 	// Create user
 	user := models.User{
-		Email:    req.Email,
-		Password: string(hashedPassword),
+		Email:        req.Email,
+		Password:     string(hashedPassword),
+		FirstName:    req.FirstName,
+		LastName:     req.LastName,
+		Phone:        req.Phone,
+		MembershipID: membershipID,
+		MemberLevel:  "Gold",
+		Points:       0,
 	}
 
 	if err := database.DB.Create(&user).Error; err != nil {
